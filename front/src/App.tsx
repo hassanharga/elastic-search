@@ -5,7 +5,7 @@ import { useEffectOnce } from './hooks/useEffectOnce';
 import { Product } from './types/product';
 import { User } from './types/user';
 
-const url = 'http://127.0.0.0:3001/api';
+const url = '/api';
 
 const App = () => {
   const [search, setSearch] = useState('');
