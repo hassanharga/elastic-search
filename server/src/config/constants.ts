@@ -13,9 +13,7 @@ export const PORT = process.env.PORT ?? 3000;
 export const ELASTIC_URL = process.env.ELASTIC_URL;
 export const ELASTIC_USERNAME = `${process.env.ELASTIC_USERNAME}`;
 export const ELASTIC_PASSWORD = `${process.env.ELASTIC_PASSWORD}`;
-export const ELASTIC_CERT = readFileSync(
-  path.join(__dirname, '../../../../Downloads/elasticsearch-8.1.3/config/certs/http_ca.crt'),
-);
+export const ELASTIC_CERT = readFileSync(path.join(__dirname, '/etc/elasticsearch/certs/http_ca.crt'));
 
 export const PRODUCTS_INDEX = 'products';
 export const USERS_INDEX = 'users';
