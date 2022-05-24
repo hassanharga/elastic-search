@@ -10,7 +10,7 @@ export const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 export const PORT = process.env.PORT ?? 3000;
 
 const CERT_PATH = IS_PROD
-  ? path.resolve('/etc/elasticsearch/certs/http_ca.crt')
+  ? path.join(__dirname, '../../http_ca.crt')
   : path.join(__dirname, '../../../../Downloads/elasticsearch-8.1.3/config/certs/http_ca.crt');
 
 // elastic search config
