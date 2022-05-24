@@ -4,9 +4,11 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import i18n from 'i18n';
 import morgan from 'morgan';
+import path from 'path';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import xss from 'xss-clean';
+import { STATIC_FILES } from '../config/constants';
 import routes from '../routes';
 import errorHandler from './errorHandler';
 
@@ -34,6 +36,8 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(STATIC_FILES));
+
 // HTTP parameter pollution attacks
 app.use(hpp());
 
@@ -46,6 +50,10 @@ app.use(morgan('dev'));
 // routes
 const apiBaseUrl = process.env.API_URL;
 app.use(`${apiBaseUrl}`, routes);
+
+app.get('/*', (_req, res) => {
+  res.sendFile(path.join(STATIC_FILES, 'index.html'));
+});
 
 app.use(errorHandler);
 

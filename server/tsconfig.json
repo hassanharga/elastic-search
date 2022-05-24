@@ -8,5 +8,5 @@
     "noUnusedLocals": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "locales", "dist"]
+  "exclude": ["node_modules", "locales", "dist", "public"]
 }
