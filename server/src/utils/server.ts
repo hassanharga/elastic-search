@@ -8,7 +8,6 @@ import path from 'path';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import xss from 'xss-clean';
-import { STATIC_FILES } from '../config/constants';
 import routes from '../routes';
 import errorHandler from './errorHandler';
 
