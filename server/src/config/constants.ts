@@ -9,11 +9,15 @@ export const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 export const PORT = process.env.PORT ?? 3000;
 
+const CERT_PATH = IS_PROD
+  ? path.resolve('/etc/elasticsearch/certs/http_ca.crt')
+  : path.join(__dirname, '../../../../Downloads/elasticsearch-8.1.3/config/certs/http_ca.crt');
+
 // elastic search config
 export const ELASTIC_URL = process.env.ELASTIC_URL;
 export const ELASTIC_USERNAME = `${process.env.ELASTIC_USERNAME}`;
 export const ELASTIC_PASSWORD = `${process.env.ELASTIC_PASSWORD}`;
-export const ELASTIC_CERT = readFileSync(path.join(__dirname, '/etc/elasticsearch/certs/http_ca.crt'));
+export const ELASTIC_CERT = readFileSync(CERT_PATH);
 
 export const PRODUCTS_INDEX = 'products';
 export const USERS_INDEX = 'users';
