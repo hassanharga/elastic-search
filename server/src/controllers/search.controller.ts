@@ -1,5 +1,5 @@
 import { UpdateResponse, WriteResponseBase } from '@elastic/elasticsearch/lib/api/types';
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { PRODUCTS_INDEX, USERS_INDEX } from '../config/constants';
 import { Product } from '../types/product';
 import { User } from '../types/user';
@@ -7,8 +7,17 @@ import ApiError from '../utils/ApiError';
 import { client } from '../utils/elastic';
 import { moveArrayItemToNewIndex } from '../utils/orderArray';
 
+const getIpAddress = (req: Request) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  // console.log('ip', ip);
+  // console.log('Browser: ' + req.headers['user-agent']);
+  return ip.toString().replace('::ffff:', '');
+};
+
 export const search: RequestHandler = async (req, res) => {
-  const { q, userId } = req.query as { q: string; userId: string };
+  const { q } = req.query as { q: string; userId: string };
+
+  const userId = getIpAddress(req);
 
   // get user previous search results if exists
   let userSerchResults: number[] = [];
@@ -65,10 +74,12 @@ export const search: RequestHandler = async (req, res) => {
 };
 
 export const setUserSearchHistory: RequestHandler = async (req, res) => {
-  const { userId, searchText, searchResult } = req.body;
-  if (!userId || !searchText || !searchResult) throw new ApiError('bad credentials', 400);
+  const { searchText, searchResult } = req.body;
+  if (!searchText || !searchResult) throw new ApiError('bad credentials', 400);
 
+  const userId = getIpAddress(req);
   const id = `${userId}-${searchText}`;
+
   const userPrevSearchExists = await client.exists({ index: USERS_INDEX, id });
 
   // console.log('userPrevSearch', userPrevSearchExists);
@@ -105,8 +116,10 @@ export const setUserSearchHistory: RequestHandler = async (req, res) => {
 };
 
 export const getUserSearchHistory: RequestHandler = async (req, res) => {
-  const { userId } = req.query as { userId: string };
-  if (!userId) throw new ApiError('no user id', 400);
+  // const { userId } = req.query as { userId: string };
+  // if (!userId) throw new ApiError('no user id', 400);
+
+  const userId = getIpAddress(req);
 
   const { hits } = await client.search<User>({
     index: USERS_INDEX,

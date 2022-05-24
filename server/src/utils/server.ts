@@ -13,6 +13,8 @@ import errorHandler from './errorHandler';
 
 const app = express();
 
+app.set('trust proxy', true);
+
 i18n.configure({
   locales: ['en', 'ar'],
   directory: `${__dirname}/../../locales`,
@@ -32,8 +34,6 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, '..', '..', 'public', 'dist')));
-
 // cors
 app.use(cors());
 app.options('*', cors);
@@ -51,11 +51,7 @@ app.use(morgan('dev'));
 const apiBaseUrl = process.env.API_URL;
 app.use(`${apiBaseUrl}`, routes);
 
-app.use(express.static(path.join(__dirname, 'build')));
-
-app.get('/*', function (_req, res) {
-  res.sendFile(path.join(__dirname, '..', '..', 'public', 'dist', 'index.html'));
-});
+app.get('/*', express.static(path.join(__dirname, '..', '..', 'public')));
 
 app.use(errorHandler);
 
