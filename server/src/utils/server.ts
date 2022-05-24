@@ -29,6 +29,7 @@ app.use(i18n.init);
 
 // cors
 app.use(cors());
+app.options('*', cors);
 
 // helmet
 app.use(helmet());
@@ -36,7 +37,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(express.static(STATIC_FILES));
+app.use(express.static(path.join(__dirname, '..', '..', 'public', 'dist')));
 
 // HTTP parameter pollution attacks
 app.use(hpp());
@@ -52,7 +53,7 @@ const apiBaseUrl = process.env.API_URL;
 app.use(`${apiBaseUrl}`, routes);
 
 app.get('/*', (_req, res) => {
-  res.sendFile(path.join(STATIC_FILES, 'index.html'));
+  res.sendFile(path.join(__dirname, '..', '..', 'public', 'dist', 'index.html'));
 });
 
 app.use(errorHandler);
