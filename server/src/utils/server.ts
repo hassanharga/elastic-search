@@ -26,10 +26,6 @@ i18n.configure({
 // localization
 app.use(i18n.init);
 
-// cors
-app.use(cors());
-app.options('*', cors);
-
 // helmet
 app.use(helmet());
 
@@ -37,6 +33,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, '..', '..', 'public', 'dist')));
+
+// cors
+app.use(cors());
+app.options('*', cors);
 
 // HTTP parameter pollution attacks
 app.use(hpp());
@@ -51,7 +51,9 @@ app.use(morgan('dev'));
 const apiBaseUrl = process.env.API_URL;
 app.use(`${apiBaseUrl}`, routes);
 
-app.get('/*', (_req, res) => {
+app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('/*', function (_req, res) {
   res.sendFile(path.join(__dirname, '..', '..', 'public', 'dist', 'index.html'));
 });
 
