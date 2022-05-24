@@ -1,12 +1,11 @@
-import { useRef, useState, useTransition } from 'react';
+import { useRef, useState } from 'react';
 import './App.css';
 import { useOutsideAlerter } from './hooks/clickOutSide';
 import { useEffectOnce } from './hooks/useEffectOnce';
 import { Product } from './types/product';
 import { User } from './types/user';
 
-const url = 'http://localhost:3001/api';
-// const url = '/api';
+const url = 'http://127.0.0.0:3001/api';
 
 const App = () => {
   const [search, setSearch] = useState('');
@@ -14,7 +13,6 @@ const App = () => {
   const [user] = useState({ id: 1 });
   const [results, setResults] = useState<Product[]>([]);
   const [searchHistory, setSearchHistory] = useState<User[]>([]);
-  // const [_,startTransition]=useTransition()
 
   const listRef = useRef<HTMLDivElement>(null);
 
