@@ -1,0 +1,68 @@
+.App {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20;
+  overflow-x: hidden;
+}
+
+.App > div {
+  padding: 20px;
+}
+
+.search-history ul {
+  padding: 5px 15px;
+}
+
+.search-container {
+  flex: 1;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+}
+
+label {
+  margin: 0 5px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 3px;
+  width: 95%;
+}
+
+input:focus,
+input:hover {
+  outline: none;
+}
+
+.list {
+  /* position: absolute; */
+  box-shadow: 0 0 10px 0px black;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.list ul {
+  list-style: none;
+  margin: 0;
+  padding: 5px;
+}
+
+.list li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid black;
+}
+mark {
+  background-color: darkgray;
+  font-weight: bold;
+}

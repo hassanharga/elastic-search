@@ -1,0 +1,7 @@
+{
+	"errorMsg": {
+		"serverError": "errorMsg.serverError"
+	},
+	"no user id": "no user id",
+	"bad credentials": "bad credentials"
+}
