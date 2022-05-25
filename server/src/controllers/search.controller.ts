@@ -37,6 +37,14 @@ export const search: RequestHandler = async (req, res) => {
       bool: {
         should: [
           {
+            wildcard: {
+              title: {
+                value: `*${q}*`,
+                case_insensitive: true,
+              },
+            },
+          },
+          {
             match: { title: q },
           },
           {

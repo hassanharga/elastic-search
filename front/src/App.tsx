@@ -24,7 +24,7 @@ const App = () => {
   });
 
   const getUserSearchHistory = async () => {
-    const res = await fetch(`${url}/search/userHistory?userId=${user.id}`, {
+    const res = await fetch(`${url}/search/userHistory`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -35,7 +35,7 @@ const App = () => {
   };
 
   const searchProductsHandler = async (val: string) => {
-    const res = await fetch(`${url}/search?q=${val}&userId=${user.id}`, {
+    const res = await fetch(`${url}/search?q=${val}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -68,17 +68,6 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="search-history">
-        <h3>recent history:</h3>
-        {searchHistory.length > 0 && (
-          <ul>
-            {searchHistory.map((res) => (
-              <li key={res.id}>{res.text}</li>
-            ))}
-          </ul>
-        )}
-      </div>
-
       <div className="search-container">
         <h1>Search Products</h1>
         <div className="search-box">
@@ -104,6 +93,16 @@ const App = () => {
             </div>
           )}
         </div>
+      </div>
+      <div className="search-history">
+        <h3>recent history:</h3>
+        {searchHistory.length > 0 && (
+          <ul>
+            {searchHistory.map((res) => (
+              <li key={res.id}>{res.text}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

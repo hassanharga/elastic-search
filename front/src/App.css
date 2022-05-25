@@ -1,9 +1,9 @@
 .App {
   height: 100vh;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 20;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   overflow-x: hidden;
 }
 
@@ -16,17 +16,16 @@
 }
 
 .search-container {
-  flex: 1;
-  margin-inline: auto;
+  width: min(500px, 80vw);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .search-box {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  width: 500px;
+  position: relative;
 }
 
 label {
@@ -45,7 +44,9 @@ input:hover {
 }
 
 .list {
-  /* position: absolute; */
+  position: absolute;
+  width: 100%;
+  top: 40px;
   box-shadow: 0 0 10px 0px black;
   border-radius: 5px;
   background-color: white;
