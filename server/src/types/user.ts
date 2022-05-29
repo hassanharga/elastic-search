@@ -4,15 +4,15 @@ export interface User {
   id: string;
   text: string;
   userId: string;
-  results: number[];
+  results: string[];
   date: Date;
   updatedAt: Date;
 }
 
 export const userMapping: Record<string, MappingProperty> | undefined = {
-  userId: { type: 'text' },
-  id: { type: 'text' },
-  text: { type: 'text' },
+  userId: { type: 'keyword' },
+  id: { type: 'keyword' },
+  text: { type: 'keyword' },
   results: { type: 'keyword' },
   date: { type: 'date' },
   updatedAt: { type: 'date' },

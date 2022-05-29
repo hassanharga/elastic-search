@@ -11,4 +11,6 @@ router
   .post(asyncHandler(Controllers.setUserSearchHistory))
   .get(asyncHandler(Controllers.getUserSearchHistory));
 
+router.route('/products').get(asyncHandler(Controllers.searchProducts));
+
 export default router;

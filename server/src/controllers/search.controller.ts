@@ -1,11 +1,11 @@
 import { UpdateResponse, WriteResponseBase } from '@elastic/elasticsearch/lib/api/types';
 import { Request, RequestHandler } from 'express';
-import { PRODUCTS_INDEX, USERS_INDEX } from '../config/constants';
+import { USERS_INDEX } from '../config/constants';
 import { Product } from '../types/product';
 import { User } from '../types/user';
 import ApiError from '../utils/ApiError';
 import { client } from '../utils/elastic';
-import { moveArrayItemToNewIndex } from '../utils/orderArray';
+// import { moveArrayItemToNewIndex } from '../utils/orderArray';
 
 const getIpAddress = (req: Request) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
@@ -17,68 +17,108 @@ const getIpAddress = (req: Request) => {
 export const search: RequestHandler = async (req, res) => {
   const { q } = req.query as { q: string; userId: string };
 
-  const userId = getIpAddress(req);
-
-  // get user previous search results if exists
-  let userSerchResults: number[] = [];
-  if (userId && q) {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const data = await client.get<User>({ index: USERS_INDEX, id: `${userId}-${q}` }).catch(() => {});
-
-    if (data && data._source) {
-      userSerchResults = data._source.results || [];
-    }
-  }
-
-  // search for provided query
-  const { hits } = await client.search<Product>({
-    index: PRODUCTS_INDEX,
+  const data = await client.search<Product>({
     query: {
-      bool: {
-        should: [
-          {
-            wildcard: {
-              title: {
-                value: `*${q}*`,
-                case_insensitive: true,
-              },
-            },
-          },
-          {
-            match: { title: q },
-          },
-          {
-            fuzzy: { title: q },
-          },
-          {
-            fuzzy: { keywords: q },
-          },
-        ],
+      match_phrase: { NAME_AR: q },
+    },
+    size: 0,
+    aggs: {
+      myagg: {
+        terms: {
+          field: 'NAME_AR',
+          include: '.*',
+        },
       },
     },
   });
 
-  // compare results of user with search results and add user previous search results to top
-  let results = hits.hits.map((ele) => ele._source) || [];
+  const buckets = (data?.aggregations?.myagg as { buckets: { key: string; doc_count: number }[] }).buckets;
+  // const searchTerms = buckets.map((ele) => ele.key);
+  const word = buckets.find((ele) => ele.key.includes(q.split(' ')[0]))?.key;
+  const matchExactWord = word ? word : buckets.length ? buckets[0].key : '';
+  const searchTerms = buckets.map((ele) => {
+    if (matchExactWord === ele.key) return matchExactWord;
+    else return `${matchExactWord} ${ele.key}`;
+  });
+  res.send(searchTerms);
 
-  if (userSerchResults.length) {
-    for await (const resId of userSerchResults) {
-      // check if user result in search result
-      const resIdx = results.findIndex((ele) => ele?.id === resId);
-      // move to the top off array
-      if (resIdx >= 0) {
-        results = moveArrayItemToNewIndex(results, resIdx, 0);
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        const product = await client.get<Product>({ index: PRODUCTS_INDEX, id: resId.toString() }).catch(() => {});
-        if (product) {
-          results.unshift(product._source);
-        }
-      }
-    }
-  }
+  // const userId = getIpAddress(req);
 
-  res.send(results);
+  // // get user previous search results if exists
+  // let userSerchResults: string[] = [];
+  // if (userId && q) {
+  //   // eslint-disable-next-line @typescript-eslint/no-empty-function
+  //   const data = await client.get<User>({ index: USERS_INDEX, id: `${userId}-${q}` }).catch(() => {});
+
+  //   if (data && data._source) {
+  //     userSerchResults = data._source.results || [];
+  //   }
+  // }
+
+  // // search for provided query
+  // const { hits } = await client.search<Product>({
+  //   index: PRODUCTS_INDEX,
+  //   query: {
+  //     bool: {
+  //       should: [
+  //         {
+  //           wildcard: {
+  //             NAME_AR: {
+  //               value: `*${q}*`,
+  //               case_insensitive: true,
+  //             },
+  //           },
+  //         },
+  //         {
+  //           match: { NAME_AR: q },
+  //         },
+  //         {
+  //           fuzzy: { NAME_AR: q },
+  //         },
+  //         {
+  //           fuzzy: { keywords: q },
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
+
+  // // compare results of user with search results and add user previous search results to top
+  // let results = hits.hits.map((ele) => ele._source) || [];
+
+  // if (userSerchResults.length) {
+  //   for await (const resId of userSerchResults) {
+  //     // check if user result in search result
+  //     const resIdx = results.findIndex((ele) => ele?.DEVICE_ID === resId);
+  //     // move to the top off array
+  //     if (resIdx >= 0) {
+  //       results = moveArrayItemToNewIndex(results, resIdx, 0);
+  //     } else {
+  //       // eslint-disable-next-line @typescript-eslint/no-empty-function
+  //       const product = await client.get<Product>({ index: PRODUCTS_INDEX, id: resId.toString() }).catch(() => {});
+  //       if (product) {
+  //         results.unshift(product._source);
+  //       }
+  //     }
+  //   }
+  // }
+
+  // res.send(results);
+};
+
+export const searchProducts: RequestHandler = async (req, res) => {
+  const { q } = req.query as { q: string };
+
+  const { hits } = await client.search<Product>({
+    query: {
+      multi_match: {
+        query: q,
+        fields: ['NAME_AR^2', 'NAME_EN^2', 'SUMMARY_AR', 'SUMMARY_EN'],
+      },
+    },
+  });
+
+  res.json(hits.hits.map((ele) => ele._source));
 };
 
 export const setUserSearchHistory: RequestHandler = async (req, res) => {
@@ -100,7 +140,7 @@ export const setUserSearchHistory: RequestHandler = async (req, res) => {
       refresh: true,
       id,
       doc: {
-        results: [...new Set([...(userSearch._source?.results || []), +searchResult])],
+        results: [...new Set([...(userSearch._source?.results || []), searchResult])],
         updatedAt: new Date(),
       },
     });
@@ -113,7 +153,7 @@ export const setUserSearchHistory: RequestHandler = async (req, res) => {
         id,
         userId,
         text: searchText,
-        results: [+searchResult],
+        results: [searchResult],
         date: new Date(),
         updatedAt: new Date(),
       },

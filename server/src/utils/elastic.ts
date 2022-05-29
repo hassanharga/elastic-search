@@ -35,10 +35,10 @@ const seedIndexData = async () => {
     datasource: createReadStream(path.join(__dirname, '..', 'data', 'products.ndjson')).pipe(split(JSON.parse)),
     refreshOnCompletion: PRODUCTS_INDEX,
     onDocument(doc) {
-      return { index: { _index: PRODUCTS_INDEX, _id: doc.id.toString() } };
+      return { index: { _index: PRODUCTS_INDEX, _id: doc.DEVICE_ID.toString() } };
     },
     onDrop(doc) {
-      console.log(`can't index document ${doc.document.id}`, doc.error);
+      console.log(`can't index document ${doc.document.DEVICE_ID}`, doc.error);
       process.exit(1);
     },
   });

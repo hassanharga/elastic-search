@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
+import { ProductDetails } from './components';
 import { useOutsideAlerter } from './hooks/clickOutSide';
 import { useEffectOnce } from './hooks/useEffectOnce';
 import { Product } from './types/product';
@@ -12,58 +13,62 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [openList, setOpenList] = useState(false);
   const [user] = useState({ id: 1 });
-  const [results, setResults] = useState<Product[]>([]);
-  const [searchHistory, setSearchHistory] = useState<User[]>([]);
+  const [results, setResults] = useState<string[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  // const [searchHistory, setSearchHistory] = useState<User[]>([]);
 
   const listRef = useRef<HTMLDivElement>(null);
 
   useOutsideAlerter(listRef, () => setOpenList(false));
 
-  useEffectOnce(() => {
-    getUserSearchHistory();
-  });
+  useEffect(() => {
+    searchProductsHandler();
+  }, [search]);
 
-  const getUserSearchHistory = async () => {
-    const res = await fetch(`${url}/search/userHistory`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await res.json();
-    console.log('getUserSearchHistory', data);
-    setSearchHistory(data);
-  };
+  // useEffectOnce(() => {
+  //   getUserSearchHistory();
+  // });
 
-  const searchProductsHandler = async (val: string) => {
-    const res = await fetch(`${url}/search?q=${val}`, {
+  // const getUserSearchHistory = async () => {
+  //   const res = await fetch(`${url}/search/userHistory`, {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //   });
+  //   const data = await res.json();
+  //   console.log('getUserSearchHistory', data);
+  //   setSearchHistory(data);
+  // };
+
+  const searchProductsHandler = async () => {
+    const res = await fetch(`${url}/search?q=${search}`, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
     const data = await res.json();
     console.log('searchProductsHandler', data);
-    setResults(data);
+    setResults([...data]);
+    if (!data || !data.length) setProducts([]);
   };
 
   const searchInputHandler = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const value = ev.target.value;
     setSearch(value);
-    searchProductsHandler(value);
     setOpenList(value ? true : false);
   };
 
-  const onProductClick = async (product: Product) => {
+  const onProductClick = async (product: string) => {
     setOpenList(false);
-    const res = await fetch(`${url}/search/userHistory`, {
-      method: 'post',
-      body: JSON.stringify({ userId: user.id, searchText: search, searchResult: product.id }),
+    const res = await fetch(`${url}/search/products?q=${product}`, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
     const data = await res.json();
     console.log('onProductClick', data);
-    getUserSearchHistory();
+    setProducts([...data]);
+    // getUserSearchHistory();
   };
 
   return (
@@ -83,9 +88,9 @@ const App = () => {
           {openList && results.length > 0 && (
             <div className="list" ref={listRef}>
               <ul>
-                {results.map((product) => (
-                  <li key={product.id} onClick={() => onProductClick(product)}>
-                    {product.title}
+                {results.map((res) => (
+                  <li key={res} onClick={() => onProductClick(res)}>
+                    {res}
                     {/* <Highlighted text={product.title} highlight={search} /> */}
                   </li>
                 ))}
@@ -94,7 +99,8 @@ const App = () => {
           )}
         </div>
       </div>
-      <div className="search-history">
+      {products.length > 0 && products.map((product) => <ProductDetails key={product.DEVICE_ID} product={product} />)}
+      {/* <div className="search-history">
         <h3>recent history:</h3>
         {searchHistory.length > 0 && (
           <ul>
@@ -103,7 +109,7 @@ const App = () => {
             ))}
           </ul>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
