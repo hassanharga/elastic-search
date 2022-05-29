@@ -11,7 +11,7 @@ import {
   PRODUCTS_INDEX,
   USERS_INDEX,
 } from '../config/constants';
-import { Product, productMapping } from '../types/product';
+import { Product, productMapping, productSettings } from '../types/product';
 import { userMapping } from '../types/user';
 
 export const client = new Client({
@@ -25,7 +25,7 @@ export const client = new Client({
 
 const seedIndexData = async () => {
   // create product index
-  const isExists = await createIndex(PRODUCTS_INDEX, productMapping);
+  const isExists = await createIndex(PRODUCTS_INDEX, productMapping, productSettings);
   // create user index
   await createIndex(USERS_INDEX, userMapping);
 
@@ -57,8 +57,10 @@ export const initElasticSearch = async () => {
   const data = await client.info();
   // eslint-disable-next-line no-console
   console.log('connected to elastic version ', data.version.number);
-  await seedIndexData();
   // await deleteIndex(USERS_INDEX);
+  // await deleteIndex(PRODUCTS_INDEX);
+  // return;
+  await seedIndexData();
 };
 
 export const createIndex = async (
