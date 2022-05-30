@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { ProductDetails } from './components';
 import { useOutsideAlerter } from './hooks/clickOutSide';
-import { useEffectOnce } from './hooks/useEffectOnce';
 import { Product } from './types/product';
-import { User } from './types/user';
 
 const url = 'http://localhost:3001/api';
 // const url = 'http://18.233.168.81:3001/api';
@@ -13,10 +11,8 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [searhedFor, setSearchFor] = useState('');
   const [openList, setOpenList] = useState(false);
-  // const [user] = useState({ id: 1 });
   const [results, setResults] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  // const [searchHistory, setSearchHistory] = useState<User[]>([]);
 
   const listRef = useRef<HTMLDivElement>(null);
 
