@@ -17,6 +17,8 @@ const getIpAddress = (req: Request) => {
 export const search: RequestHandler = async (req, res) => {
   const { q } = req.query as { q: string; userId: string };
 
+  if (!q) return res.json([]);
+
   const data = await client.search<Product>({
     index: PRODUCTS_INDEX,
     query: {

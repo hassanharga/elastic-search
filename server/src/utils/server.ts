@@ -13,7 +13,7 @@ import errorHandler from './errorHandler';
 
 const app = express();
 
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 i18n.configure({
   locales: ['en', 'ar'],
@@ -24,6 +24,9 @@ i18n.configure({
 });
 
 // middlewares
+// cors
+app.use(cors());
+app.options('*', cors);
 
 // localization
 app.use(i18n.init);
@@ -33,10 +36,6 @@ app.use(helmet());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// cors
-app.use(cors());
-app.options('*', cors);
 
 // HTTP parameter pollution attacks
 app.use(hpp());

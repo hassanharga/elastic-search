@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./dist/app.js",
     "dev": "ts-node-dev --respawn --rs --cls ./src/app.ts",
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc && cp -R src/data dist/data",
     "gen:env": "gen-env-types .env -o src/types/env.d.ts -e .",
     "lint": "eslint src/**/*.ts --quiet --fix",
     "format": "prettier --write ./**/*.{js,ts} --config ./.prettierrc"
