@@ -1,7 +1,11 @@
 .product-container {
   display: flex;
-  width: 700px;
+  width: min(700px, 90vw);
   flex-direction: column;
+  border: 1px solid black;
+  border-radius: 5px;
+  box-shadow: 0 0 10px -2px black;
+  cursor: pointer;
 }
 
 .product-container h4 {

@@ -5,6 +5,7 @@
   align-items: center;
   gap: 20px;
   overflow-x: hidden;
+  padding: 20px 0;
 }
 
 .App > div {
@@ -22,6 +23,10 @@
   align-items: center;
 }
 
+.search-container h1 {
+  margin: 5px 0;
+}
+
 .search-box {
   width: 100%;
   display: flex;
@@ -35,7 +40,7 @@ label {
 input {
   padding: 10px;
   border-radius: 3px;
-  width: 95%;
+  width: 100%;
 }
 
 input:focus,
