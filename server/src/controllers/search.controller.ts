@@ -78,7 +78,7 @@ export const searchProducts: RequestHandler = async (req, res) => {
 
   const { hits } = await client.search<Product>({
     query: {
-      match: { NAME_AR: q },
+      multi_match: { query: q, fields: ['NAME_AR^2'] },
     },
   });
 
